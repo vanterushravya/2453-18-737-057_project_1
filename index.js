@@ -56,21 +56,21 @@ app.post('/searchhospital', middleware.checkToken, (req, res) => {
 });
 
 app.post('/addvent', (req, res) => {
-    const hid = req.query.hid;
-    const ventid = req.query.ventid;
+    const hid = req.query.hId;
+    const ventid = req.query.ventilatorId;
     const status = req.query.status;
     const name = req.query.name;
     console.log("adding ventilator, please wait a moment");
-    const item = { "hid": hid, "ventilatorid": ventid, "status": status, "name": name };
+    const item = { "hId": hid, "ventilatorId": ventid, "status": status, "name": name };
     db.collection("ventilators").insertOne(item, function (err, result) {
         res.json("inserted successfully");
     });
 });
 
 app.put('/updateventilator', middleware.checkToken, (req, res) => {
-    const ventid = { ventid: req.query.ventid };
+    const ventid = { ventid: req.body.ventilatorId };
     console.log(ventid);
-    const newvalues = { $set: { status: req.query.status } };
+    const newvalues = { $set: { status: req.body.status } };
     console.log("updating ventilator details, please wait a moment");
     db.collection("ventilators").updateOne(ventid, newvalues, function (err, result) {
         res.json('updated one document');
@@ -81,18 +81,18 @@ app.put('/updateventilator', middleware.checkToken, (req, res) => {
 app.delete('/deletevent', middleware.checkToken, (req, res) => {
     const ventid = req.query.ventid;
     console.log(ventid);
-    const temp = { "ventilatorid": ventid };
+    const temp = { "ventilatorId": ventid };
     db.collection("ventilators").deleteOne(temp, function (err, obj) {
         if (err) throw err;
         res.json("deleted one element");
     });
 });
 
-app.get('/searchventilators', (req, res) => {
+app.post('/searchventilators', (req, res) => {
     const status = req.query.status;
     const name = req.query.name;
     console.log("searching ventilators, please wait a moment");
-    const data = db.collection("ventilators").find({ "name": name }, { "status": status }).toArray().then(result => res.send(result));
+    const data = db.collection("ventilators").find({ "name": name }, { "status": status }).toArray().then(result => res.json(result));
     res.send("no hospital found :(");
 });
 
